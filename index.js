@@ -66,7 +66,7 @@ io.on('connection', function(socket) {
 	console.log(map1);
 
 	socket.emit('online', users);
-	socket.on('hello', (name, pass) => {
+	socket.on('add user', (name, pass) => {
 		const u = new User({
 			username: name,
 			password: pass
@@ -90,6 +90,18 @@ io.on('connection', function(socket) {
 		if (index > -1) {
 			users.splice(index, 1);
 		}
+	});
+
+	socket.on('login', (name, password) => {
+		console.log('name: ');
+		console.log(name);
+		console.log('password: ');
+		console.log(password);
+		// find = User.collection.find({
+		// 	username: "???"
+		// });
+		// console.log('find: ');
+		// console.log(find);
 	});
 	// socket.on('leave', (user) => {
 	// 	console.log("left");
