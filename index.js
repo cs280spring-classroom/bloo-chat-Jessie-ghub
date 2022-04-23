@@ -8,7 +8,7 @@ const faker = require('faker');
 const User = require('./models/User');
 const mongoose = require('mongoose');
 const URI = `mongodb+srv://jessie:Jessie2002@boolchat.jb9fv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-
+count = 0;
 //console.log(mongoose);
 mongoose
 	.connect(URI)
@@ -18,22 +18,6 @@ mongoose
 	.catch((err) => {
 		console.log(err);
 	});
-
-// const UserSchema = new mongoose.Schema({
-// 	username: { type: String },
-// 	password: { type: String }
-// });
-
-//const User = mongoose.model('User', UserSchema);
-// User.create(
-// 	{
-// 		username: '1',
-// 		password: '2'
-// 	},
-// 	(err, user) => {
-// 		console.log(err ? err : user);
-// 	}
-// );
 
 const port = process.env.PORT || 7000;
 users = [];
@@ -45,33 +29,59 @@ const map1 = new Map();
 app.use(express.static('assets'));
 
 app.get('/', (req, res) => {
+	console.log(users);
 	res.render('index.njk', null);
 });
 
 app.get('/chatroom', (req, res) => {
-	//	console.log(users);
-	res.render('chatroom.njk', { uname: req.query.uname });
-	io.emit('new', req.query.uname);
-	users.push(req.query.uname);
-	// console.log(users);
+	//res.render('chatroom.njk', { uname: req.query.uname });
+	//io.emit('new', req.query.uname);
+	//users.push(req.query.uname);
+	//console.log(users);
+	// console.log('1: ');
+	// console.log(req.query.uname);
+	// io.emit('new', req.query.uname);
+
+	// console.log(req.query.password);
+	// console.log('2: ');
+	authorize = false;
+	User.find().then((data) => {
+		if (data.length) {
+			data.forEach((person) => {
+				if (person.username == req.query.uname && person.password == req.query.password) {
+					users.push(req.query.uname);
+					res.render('chatroom.njk', { uname: req.query.uname });
+					io.emit('new', req.query.uname);
+					console.log('authorization succeed');
+					authorize = true;
+				}
+			});
+		}
+		if (!authorize) {
+			console.log('need to register first');
+		}
+	});
 });
 
 io.on('connection', function(socket) {
-	if (users.length > 0) {
+	if (users.length > 0 && users.length > count) {
 		map1.set(socket.id, users[users.length - 1]);
+		count = count + 1;
 	}
 	hiUser = users[users.length - 1];
 	socket.emit('hi', hiUser);
 	console.log('after this');
 	console.log(map1);
+	console.log(users);
 
-	socket.emit('online', users);
+	socket.emit('online', users, hiUser);
 	socket.on('add user', (name, pass) => {
 		const u = new User({
 			username: name,
 			password: pass
 		});
 		u.save().then(() => {
+			//users.push(name);
 			console.log('yeah, new user saved!');
 			//window.alert('success!');
 		});
@@ -91,22 +101,6 @@ io.on('connection', function(socket) {
 			users.splice(index, 1);
 		}
 	});
-
-	socket.on('login', (name, password) => {
-		console.log('name: ');
-		console.log(name);
-		console.log('password: ');
-		console.log(password);
-		// find = User.collection.find({
-		// 	username: "???"
-		// });
-		// console.log('find: ');
-		// console.log(find);
-	});
-	// socket.on('leave', (user) => {
-	// 	console.log("left");
-	// 	//Broadcast the message to everyone
-	// });
 });
 
 http.listen(port, () => {
