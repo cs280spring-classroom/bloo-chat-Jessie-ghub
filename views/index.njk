@@ -8,13 +8,26 @@
   </head>
   <body>
     <div class="chat">
-      <h1>Welcome
-        <br><br>to<br><br>
+      <h1>Welcome to<br><br>
         Bloo Chat!</h1>
       <form action="/chatroom" id="chatForm">
-        <input name="uname" id="txt" autocomplete="off" autofocus="on" placeholder="type your nickname here..."/>
+        <input name="uname" id="txt" autocomplete="off" autofocus="on" placeholder="username"/>
         <button>Join</button>
+        <input name="password" id="ptxt" autocomplete="off" autofocus="on" placeholder="password"/>
       </form>
+        <fieldset>
+      <legend> &nbsp&nbsp Register new account! &nbsp&nbsp</legend>
+      <label>
+        &nbsp Username: <input type="txt" id="newName" name="month" placeholder="enter username here">
+      </label>
+      <label>
+        &nbsp Password: <input type="txt" id="newPass" name="year" placeholder="enter password">
+      </label>
+      <button id="submit">&nbspRegistar&nbsp</button>
+    </fieldset>
+        
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"></script>
+    <script src="users.js"></script>
   </body>
 </html>

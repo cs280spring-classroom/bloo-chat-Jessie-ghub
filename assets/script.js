@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 	const form = document.getElementById('chatForm');
 	const messages = document.getElementById('messages');
 	const messageToSend = document.getElementById('txt');
+
 	form.addEventListener('submit', (event) => {
 		socket.emit('message', {
 			user: username,
@@ -19,11 +20,18 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 		const message = document.createElement('li');
 		message.innerHTML = `<strong>${msg.user}</strong>: ${msg.message}`;
 		messages.appendChild(message);
+		messages.scrollTop = messages.scrollHeight;
 	});
 
-	socket.on('hi', (greeting) => {
+	socket.on('hi', (name) => {
 		const message = document.createElement('li');
-		message.innerHTML = `${greeting}`;
+		message.innerHTML = `Hi ${name}! Welcome to the BLOO CHAT!`;
+		messages.appendChild(message);
+	});
+
+	socket.on('leave', (name) => {
+		const message = document.createElement('li');
+		message.innerHTML = `${name} left the chat`;
 		messages.appendChild(message);
 	});
 
