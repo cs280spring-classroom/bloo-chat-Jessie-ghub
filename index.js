@@ -9,7 +9,11 @@ const User = require('./models/User');
 const mongoose = require('mongoose');
 const URI = `mongodb+srv://jessie:Jessie2002@boolchat.jb9fv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 count = 0;
-//console.log(mongoose);
+var alert = require('alert');
+const bcrypt = require('bcrypt');
+const { hashPassword } = require('./assets/hashing');
+const { verifyPassword } = require('./assets/hashing');
+
 mongoose
 	.connect(URI)
 	.then(() => {
@@ -33,32 +37,57 @@ app.get('/', (req, res) => {
 	res.render('index.njk', null);
 });
 
-app.get('/chatroom', (req, res) => {
-	//res.render('chatroom.njk', { uname: req.query.uname });
-	//io.emit('new', req.query.uname);
-	//users.push(req.query.uname);
-	//console.log(users);
-	// console.log('1: ');
-	// console.log(req.query.uname);
-	// io.emit('new', req.query.uname);
+app.get('/register', (req, res) => {
+	n = req.query.newName;
+	pwd = req.query.newPass;
+	if (n != '' && pwd != '') {
+		hashPassword(pwd)
+			.then((result) => {
+				console.log(result);
+				const u = new User({
+					username: n,
+					password: result
+				});
+				u.save().then(() => {
+					alert('Account created! chat now');
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+		//socket.emit('add user', name.value, pass.value);
+	} else {
+		alert('invalid input');
+	}
+});
 
-	// console.log(req.query.password);
-	// console.log('2: ');
+app.get('/chatroom', (req, res) => {
+	username = req.query.uname;
+	password = req.query.password;
+	if (username == '' || password == '') {
+		alert('You must provide both username and password.');
+	}
 	authorize = false;
 	User.find().then((data) => {
 		if (data.length) {
 			data.forEach((person) => {
-				if (person.username == req.query.uname && person.password == req.query.password) {
-					users.push(req.query.uname);
-					res.render('chatroom.njk', { uname: req.query.uname });
-					io.emit('new', req.query.uname);
-					console.log('authorization succeed');
-					authorize = true;
-				}
+				verifyPassword(password, person.password)
+					.then((result) => {
+						if (result) {
+							users.push(req.query.uname);
+							res.render('chatroom.njk', { uname: req.query.uname });
+							io.emit('new', req.query.uname);
+							console.log('authorization succeed');
+							authorize = true;
+						}
+					})
+					.catch((err) => {
+						console.log(err);
+					});
 			});
 		}
 		if (!authorize) {
-			console.log('need to register first');
+			alert('authorization failed');
 		}
 	});
 });
@@ -76,15 +105,16 @@ io.on('connection', function(socket) {
 
 	socket.emit('online', users, hiUser);
 	socket.on('add user', (name, pass) => {
-		const u = new User({
-			username: name,
-			password: pass
-		});
-		u.save().then(() => {
-			//users.push(name);
-			console.log('yeah, new user saved!');
-			//window.alert('success!');
-		});
+		// console.log(pass);
+		// const u = new User({
+		// 	username: name,
+		// 	password: pass
+		// });
+		// u.save().then(() => {
+		// 	//users.push(name);
+		// 	console.log('yeah, new user saved!');
+		// 	//window.alert('success!');
+		// });
 	});
 	socket.on('message', (msg) => {
 		debug(`${msg.user}: ${msg.message}`);

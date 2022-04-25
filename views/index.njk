@@ -10,22 +10,21 @@
     <div class="chat">
       <h1>Welcome to<br><br>
         Bloo Chat!</h1>
+        <div style="float:left;">
       <form action="/chatroom" id="chatForm">
-        <input name="uname" id="txt1" autocomplete="off" autofocus="on" placeholder="username"/>
+        <input name="uname" id="txt1" autocomplete="off" autofocus="on" placeholder="userme"/>
         <button>Join</button>
         <input name="password" id="txt2" autocomplete="off" autofocus="on" placeholder="password"/>
       </form>
-        <fieldset>
-      <legend> &nbsp&nbsp Register new account! &nbsp&nbsp</legend>
-      <label>
-        &nbsp Username: <input type="txt" id="newName" name="month" placeholder="enter username here">
-      </label>
-      <label>
-        &nbsp Password: <input type="txt" id="newPass" name="year" placeholder="enter password">
-      </label>
-      <button id="submit">&nbspRegistar&nbsp</button>
-    </fieldset>
-        
+      </div>
+      <br />
+      <div style="float:right;">
+      <form action="/register" id="chatForm2">
+        <input type="txt" id="txt3" name="newName" placeholder="welco username">
+        <button>Register</button>
+        <input type="txt" id="txt4" name="newPass" placeholder=":) password">
+      </form>
+      </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"></script>
     <script src="users.js"></script>

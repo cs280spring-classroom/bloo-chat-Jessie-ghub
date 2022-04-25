@@ -64,4 +64,8 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 		message.style.backgroundColor = 'green';
 		messages.appendChild(message);
 	});
+
+	socket.on('error', () => {
+		window.alert('register first!');
+	});
 });

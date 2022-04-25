@@ -5,12 +5,12 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 	const name = document.getElementById('newName');
 	const pass = document.getElementById('newPass');
 
-	submitBtn.addEventListener('click', (event) => {
+	submitBtn.addEventListener('click', async (event) => {
 		if (name.value != '' && pass.value != '') {
 			socket.emit('add user', name.value, pass.value);
-			window.alert('success!');
+			window.alert('Account created! chat now');
 		} else {
-			window.alert('invalid input!');
+			window.alert('invalid input');
 		}
 		event.preventDefault();
 	});
