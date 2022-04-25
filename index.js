@@ -66,23 +66,24 @@ app.get('/chatroom', (req, res) => {
 	password = req.query.password;
 	if (username == '' || password == '') {
 		alert('You must provide both username and password.');
+	} else {
+		User.findOne({ username }).then((user) => {
+			verifyPassword(password, user ? user.password : '')
+				.then((result) => {
+					if (result) {
+						users.push(username);
+						res.render('chatroom.njk', { uname: username });
+						io.emit('new', username);
+						console.log('authorization succeed');
+					} else {
+						alert('authorization failed');
+					}
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		});
 	}
-	User.findOne({ username }).then((user) => {
-		verifyPassword(password, user ? user.password : '')
-			.then((result) => {
-				if (result) {
-					users.push(username);
-					res.render('chatroom.njk', { uname: username });
-					io.emit('new', username);
-					console.log('authorization succeed');
-				} else {
-					alert('authorization failed');
-				}
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	});
 });
 
 io.on('connection', function(socket) {
