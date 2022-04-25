@@ -67,28 +67,21 @@ app.get('/chatroom', (req, res) => {
 	if (username == '' || password == '') {
 		alert('You must provide both username and password.');
 	}
-	authorize = false;
-	User.find().then((data) => {
-		if (data.length) {
-			data.forEach((person) => {
-				verifyPassword(password, person.password)
-					.then((result) => {
-						if (result) {
-							users.push(req.query.uname);
-							res.render('chatroom.njk', { uname: req.query.uname });
-							io.emit('new', req.query.uname);
-							console.log('authorization succeed');
-							authorize = true;
-						}
-					})
-					.catch((err) => {
-						console.log(err);
-					});
+	User.findOne({ username }).then((user) => {
+		verifyPassword(password, user ? user.password : '')
+			.then((result) => {
+				if (result) {
+					users.push(username);
+					res.render('chatroom.njk', { uname: username });
+					io.emit('new', username);
+					console.log('authorization succeed');
+				} else {
+					alert('authorization failed');
+				}
+			})
+			.catch((err) => {
+				console.log(err);
 			});
-		}
-		if (!authorize) {
-			alert('authorization failed');
-		}
 	});
 });
 
@@ -104,18 +97,6 @@ io.on('connection', function(socket) {
 	console.log(users);
 
 	socket.emit('online', users, hiUser);
-	socket.on('add user', (name, pass) => {
-		// console.log(pass);
-		// const u = new User({
-		// 	username: name,
-		// 	password: pass
-		// });
-		// u.save().then(() => {
-		// 	//users.push(name);
-		// 	console.log('yeah, new user saved!');
-		// 	//window.alert('success!');
-		// });
-	});
 	socket.on('message', (msg) => {
 		debug(`${msg.user}: ${msg.message}`);
 		//Broadcast the message to everyone
