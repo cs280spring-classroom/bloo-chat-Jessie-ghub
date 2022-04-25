@@ -1,24 +1,24 @@
 {% extends "./parent.njk" %}
 {% block a %}
-    <div class="chat">
-      <h1>Welcome to<br><br>
-        Bloo Chat!</h1>
-        <div style="float:left;">
-      <form action="/chatroom" id="chatForm">
-        <input name="uname" id="txt1" autocomplete="off" autofocus="on" placeholder="enter your username"/>
-        <button>Join</button>
-        <input name="password" id="txt2" autocomplete="off" autofocus="on" placeholder="enter your password"/>
-      </form>
-      </div>
-      <br />
-      <div style="float:right;">
-      <form action="/register" id="chatForm2">
-        <input type="txt" id="txt3" autocomplete="off" autofocus="on" name="newName" placeholder="register here! set your username">
-        <button>Register</button>
-        <input type="txt" id="txt4" autocomplete="off" autofocus="on" name="newPass" placeholder="set your password">
-      </form>
-      </div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"></script>
-    <script src="users.js"></script>
+<div class="chat">
+  <h1>Welcome to<br><br>
+  Bloo Chat!</h1>
+  <div style="float:left;">
+    <form action="/chatroom" id="chatForm">
+      <input name="uname" id="txt1" autocomplete="off" autofocus="on" placeholder="enter your username"/>
+      <button>Join</button>
+      <input name="password" id="txt2" autocomplete="off" autofocus="on" placeholder="enter your password"/>
+    </form>
+  </div>
+  <br />
+  <div style="float:right;">
+    <form action="/register" id="chatForm2">
+      <input type="txt" id="txt3" autocomplete="off" autofocus="on" name="newName" placeholder="register here! set your username">
+      <button>Register</button>
+      <input type="txt" id="txt4" autocomplete="off" autofocus="on" name="newPass" placeholder="set your password">
+    </form>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.1/socket.io.js"></script>
+<script src="users.js"></script>
 {% endblock %}
