@@ -11,8 +11,9 @@ const URI = `mongodb+srv://jessie:Jessie2002@boolchat.jb9fv.mongodb.net/myFirstD
 count = 0;
 var alert = require('alert');
 const bcrypt = require('bcrypt');
-const { hashPassword } = require('./assets/hashing');
-const { verifyPassword } = require('./assets/hashing');
+const { hashPassword } = require('./util/hashing');
+const { verifyPassword } = require('./util/hashing');
+nunjucks.configure('views', { autoescape: true });
 
 mongoose
 	.connect(URI)
@@ -71,7 +72,9 @@ app.get('/chatroom', (req, res) => {
 			verifyPassword(password, user ? user.password : '')
 				.then((result) => {
 					if (result) {
-						users.push(username);
+						if (users.indexOf(username) < 0) {
+							users.push(username);
+						}
 						res.render('chatroom.njk', { uname: username });
 						io.emit('new', username);
 						console.log('authorization succeed');
@@ -104,11 +107,11 @@ io.on('connection', function(socket) {
 		io.emit('message', msg);
 	});
 	socket.on('disconnect', function() {
-		name = map1.get(socket.id);
-		console.log(name);
-		io.emit('leave', name);
+		nameRemove = map1.get(socket.id);
+		console.log(nameRemove);
+		io.emit('leave', nameRemove);
 		console.log('left');
-		index = users.indexOf(name);
+		index = users.indexOf(nameRemove);
 		if (index > -1) {
 			users.splice(index, 1);
 		}

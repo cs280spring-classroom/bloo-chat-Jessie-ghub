@@ -7,6 +7,15 @@ After cloning the application, run `npm install` to install the dependencies.
 
 To run the application, use the command `npm run dev`.
 
+This app uses Socket.io to create a real time web server that accept connections from the client. (deployed at index.js)
+
+When a user connect, it creates a new socket (client). Clients collect information like username and password (from njk files, where user submit files and input messages) and forward them to the server. The server is able to broadcast info and commands to all clients connected.
+(deployed at script.js)
+
+App.get() function in index.js define route handlers so that when click 'join' it jumps from welcome page (index.njk) to message page (chatroom.njk). We also took advantage of it to handle user registration.
+
+The user data is stored on Mongodb (models/User.js) and password is hashed and salted ('./util/hashing')
+
 Detailed instructions are at this [url](https://cs280spring.github.io/hw/hw5/index.html).
 
 The application is deployed on [Heroku](https://bloo-chat-starter.herokuapp.com/).

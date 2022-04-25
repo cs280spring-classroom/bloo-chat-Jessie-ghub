@@ -49,9 +49,6 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 					pps += users[i];
 					pps += ' ';
 				}
-				// if (i != users.length - 2 && i >= 0) {
-				// 	pps += ', ';
-				// }
 			}
 			message.innerHTML = `<strong><u>BlooChatApp</u></strong>  Online users: ${pps}`;
 		}
