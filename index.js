@@ -9,7 +9,6 @@ const mongoose = require('mongoose');
 const URI = `mongodb+srv://jessie:Jessie2002@boolchat.jb9fv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 count = 0;
 var alert = require('alert');
-const bcrypt = require('bcrypt');
 const { hashPassword } = require('./util/hashing');
 const { verifyPassword } = require('./util/hashing');
 nunjucks.configure('views', { autoescape: true });
@@ -24,13 +23,16 @@ mongoose
 	});
 
 const port = process.env.PORT || 7000;
-users = [];
 nunjucks.configure('views', {
 	autoescape: true,
 	express: app
 });
-const map1 = new Map();
 app.use(express.static('assets'));
+
+// store usernames
+users = [];
+// store socket.id and corresponding usernames
+const map1 = new Map();
 
 app.get('/', (req, res) => {
 	console.log(users);
@@ -38,24 +40,24 @@ app.get('/', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-	n = req.query.newName;
-	pwd = req.query.newPass;
-	if (n != '' && pwd != '') {
-		hashPassword(pwd)
+	account_name = req.query.newName;
+	account_pwd = req.query.newPass;
+	// check valid account name and password
+	if (account_name != '' && account_pwd != '') {
+		hashPassword(account_pwd)
 			.then((result) => {
-				console.log(result);
-				const u = new User({
-					username: n,
+				const account = new User({
+					username: account_name,
 					password: result
 				});
-				u.save().then(() => {
+				// add new account to the db
+				account.save().then(() => {
 					alert('Account created! chat now');
 				});
 			})
 			.catch((err) => {
 				console.log(err);
 			});
-		//socket.emit('add user', name.value, pass.value);
 	} else {
 		alert('invalid input');
 	}
@@ -67,15 +69,13 @@ app.get('/chatroom', (req, res) => {
 	if (username == '' || password == '') {
 		alert('You must provide both username and password.');
 	} else {
+		// check whether the username and password is in the database
 		User.findOne({ username }).then((user) => {
 			verifyPassword(password, user ? user.password : '')
 				.then((result) => {
 					if (result) {
-						// if (users.indexOf(username) < 0) {
-						// 	users.push(username);
-						// }
+						// success, go to chatroom
 						res.render('chatroom.njk', { uname: username });
-						// io.emit('new', username);
 						console.log('authorization succeed');
 					} else {
 						alert('authorization failed');
@@ -89,34 +89,26 @@ app.get('/chatroom', (req, res) => {
 });
 
 io.on('connection', function(socket) {
-	// if (users.length > 0 && users.length > count) {
-	// 	map1.set(socket.id, users[users.length - 1]);
-	// 	count = count + 1;
-	// }
-	// hiUser = map1.get(socket.id);
-	// socket.emit('hi', hiUser);
-	// console.log('after this');
-	// console.log(socket.id);
-	// console.log(map1);
-	// console.log(users);
-	socket.on("uname", username => {
+	socket.on('log in', (username) => {
+		// update local variables
 		users.push(username);
-		map1.set(socket.id,username);
-		//user[socket.id] = username;
+		map1.set(socket.id, username);
+		// for the new user, display online users; for others, notify new user entrance
 		socket.emit('online', users);
-		socket.broadcast.emit('new',username);
+		socket.broadcast.emit('enter chat', username);
 	});
-	
+
 	socket.on('message', (msg) => {
 		debug(`${msg.user}: ${msg.message}`);
 		//Broadcast the message to everyone
 		io.emit('message', msg);
 	});
+
 	socket.on('disconnect', function() {
 		nameRemove = map1.get(socket.id);
-		// console.log(nameRemove);
-		socket.broadcast.emit('leave', nameRemove);
-		// console.log('left');
+		// notify everyone else who left
+		socket.broadcast.emit('leave chat', nameRemove);
+		// update local variables
 		index = users.indexOf(nameRemove);
 		if (index > -1) {
 			users.splice(index, 1);
