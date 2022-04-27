@@ -4,7 +4,6 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const faker = require('faker');
 const User = require('./models/User');
 const mongoose = require('mongoose');
 const URI = `mongodb+srv://jessie:Jessie2002@boolchat.jb9fv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
@@ -72,11 +71,11 @@ app.get('/chatroom', (req, res) => {
 			verifyPassword(password, user ? user.password : '')
 				.then((result) => {
 					if (result) {
-						if (users.indexOf(username) < 0) {
-							users.push(username);
-						}
+						// if (users.indexOf(username) < 0) {
+						// 	users.push(username);
+						// }
 						res.render('chatroom.njk', { uname: username });
-						io.emit('new', username);
+						// io.emit('new', username);
 						console.log('authorization succeed');
 					} else {
 						alert('authorization failed');
@@ -90,17 +89,24 @@ app.get('/chatroom', (req, res) => {
 });
 
 io.on('connection', function(socket) {
-	if (users.length > 0 && users.length > count) {
-		map1.set(socket.id, users[users.length - 1]);
-		count = count + 1;
-	}
-	hiUser = users[users.length - 1];
-	socket.emit('hi', hiUser);
-	console.log('after this');
-	console.log(map1);
-	console.log(users);
-
-	socket.emit('online', users, hiUser);
+	// if (users.length > 0 && users.length > count) {
+	// 	map1.set(socket.id, users[users.length - 1]);
+	// 	count = count + 1;
+	// }
+	// hiUser = map1.get(socket.id);
+	// socket.emit('hi', hiUser);
+	// console.log('after this');
+	// console.log(socket.id);
+	// console.log(map1);
+	// console.log(users);
+	socket.on("uname", username => {
+		users.push(username);
+		map1.set(socket.id,username);
+		//user[socket.id] = username;
+		socket.emit('online', users);
+		socket.broadcast.emit('new',username);
+	});
+	
 	socket.on('message', (msg) => {
 		debug(`${msg.user}: ${msg.message}`);
 		//Broadcast the message to everyone
@@ -108,13 +114,14 @@ io.on('connection', function(socket) {
 	});
 	socket.on('disconnect', function() {
 		nameRemove = map1.get(socket.id);
-		console.log(nameRemove);
-		io.emit('leave', nameRemove);
-		console.log('left');
+		// console.log(nameRemove);
+		socket.broadcast.emit('leave', nameRemove);
+		// console.log('left');
 		index = users.indexOf(nameRemove);
 		if (index > -1) {
 			users.splice(index, 1);
 		}
+		map1.delete(socket.id);
 	});
 });
 

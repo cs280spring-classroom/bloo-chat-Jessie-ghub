@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 	const messages = document.getElementById('messages');
 	const messageToSend = document.getElementById('txt');
 
+	appendWelcome(username);
+	socket.emit('uname', username);
+
 	form.addEventListener('submit', (event) => {
 		socket.emit('message', {
 			user: username,
@@ -23,11 +26,11 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 		messages.scrollTop = messages.scrollHeight;
 	});
 
-	socket.on('hi', (name) => {
+	function appendWelcome(username) {
 		const message = document.createElement('li');
-		message.innerHTML = `<strong><u>BlooChatApp</u></strong>  Welcome ${name}!`;
+		message.innerHTML = `<strong><u>BlooChatApp</u></strong>  Welcome ${username}!`;
 		messages.appendChild(message);
-	});
+	}
 
 	socket.on('leave', (name) => {
 		if (name) {
@@ -38,14 +41,14 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 		}
 	});
 
-	socket.on('online', (users, name) => {
+	socket.on('online', (users) => {
 		const message = document.createElement('li');
 		if (users.length === 1) {
 			message.innerHTML = `<strong><u>BlooChatApp</u></strong>  Unfortunately no one is online at the moment`;
 		} else {
 			pps = '';
 			for (i = 0; i < users.length; i++) {
-				if (users[i] != name) {
+				if (users[i] != username) {
 					pps += users[i];
 					pps += ' ';
 				}
