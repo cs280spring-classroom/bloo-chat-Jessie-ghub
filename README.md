@@ -18,4 +18,4 @@ The user data is stored on Mongodb (models/User.js) and password is hashed and s
 
 Detailed instructions are at this [url](https://cs280spring.github.io/hw/hw5/index.html).
 
-The application is deployed on [Heroku](https://bloo-chat-starter.herokuapp.com/).
+The application is deployed on [Heroku](https://bloochat-jluo30.herokuapp.com).
