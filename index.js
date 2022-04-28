@@ -13,7 +13,6 @@ var alert = require('alert');
 const { hashPassword } = require('./util/hashing');
 const { verifyPassword } = require('./util/hashing');
 nunjucks.configure('views', { autoescape: true });
-const port = process.env.PORT || 7000;
 
 mongoose
 	.connect(URI)
@@ -24,6 +23,7 @@ mongoose
 		console.log(err);
 	});
 
+const port = process.env.PORT || 7000;
 nunjucks.configure('views', {
 	autoescape: true,
 	express: app
@@ -33,7 +33,7 @@ app.use(express.static('assets'));
 // store usernames
 users = [];
 // store socket.id and corresponding usernames
-const user_map = new Map();
+const map1 = new Map();
 
 app.get('/', (req, res) => {
 	console.log(users);
@@ -98,7 +98,7 @@ io.on('connection', function(socket) {
 	socket.on('log in', (username) => {
 		// update local variables
 		users.push(username);
-		user_map.set(socket.id, username);
+		map1.set(socket.id, username);
 		// for the new user, display online users; for others, notify new user entrance
 		socket.emit('online', users);
 		socket.broadcast.emit('enter chat', username);
@@ -111,7 +111,7 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('disconnect', function() {
-		nameRemove = user_map.get(socket.id);
+		nameRemove = map1.get(socket.id);
 		// notify everyone else who left
 		socket.broadcast.emit('leave chat', nameRemove);
 		// update local variables
@@ -119,7 +119,7 @@ io.on('connection', function(socket) {
 		if (index > -1) {
 			users.splice(index, 1);
 		}
-		user_map.delete(socket.id);
+		map1.delete(socket.id);
 	});
 });
 
