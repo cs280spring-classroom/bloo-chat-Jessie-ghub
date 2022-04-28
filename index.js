@@ -44,22 +44,20 @@ app.get('/register', (req, res) => {
 	account_pwd = req.query.newPass;
 	// check valid account name and password
 	if (account_name != '' && account_pwd != '') {
-		setTimeout(() => {
-			hashPassword(account_pwd)
-				.then((result) => {
-					const account = new User({
-						username: account_name,
-						password: result
-					});
-					// add new account to the db
-					account.save().then(() => {
-						alert('Account created! chat now');
-					});
-				})
-				.catch((err) => {
-					console.log(err);
+		hashPassword(account_pwd)
+			.then((result) => {
+				const account = new User({
+					username: account_name,
+					password: result
 				});
-		}, 2000);
+				// add new account to the db
+				account.save().then(() => {
+					alert('Account created! chat now');
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	} else {
 		alert('invalid input');
 	}
@@ -72,28 +70,26 @@ app.get('/chatroom', (req, res) => {
 		alert('You must provide both username and password.');
 	} else {
 		// check whether the username and password is in the database
-		setTimeout(() => {
-			User.findOne({ username })
-				.then((user) => {
-					verifyPassword(password, user ? user.password : '')
-						.then((result) => {
-							if (result) {
-								// success, go to chatroom
-								res.render('chatroom.njk', { uname: username });
-								console.log('authorization succeed');
-							} else {
-								alert('authorization failed');
-							}
-						})
-						.catch((err) => {
-							console.log(err);
-						});
-				})
-				.catch((err) => {
-					console.log(err);
-					alert('user not found');
-				});
-		}, 2000);
+		User.findOne({ username })
+			.then((user) => {
+				verifyPassword(password, user ? user.password : '')
+					.then((result) => {
+						if (result) {
+							// success, go to chatroom
+							res.render('chatroom.njk', { uname: username });
+							console.log('authorization succeed');
+						} else {
+							alert('authorization failed');
+						}
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			})
+			.catch((err) => {
+				console.log(err);
+				alert('user not found');
+			});
 	}
 });
 
