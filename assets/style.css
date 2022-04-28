@@ -60,6 +60,24 @@ form button {
   padding: 5px 10px;
 }
 
+#messages span {
+  padding: 3px 12px;
+}
+
+.green {
+  color: green;
+}
+
+.red {
+  color: red;
+}
+
+.badge {
+  background: navy;
+  border-radius: 45%;
+  height: 20px;
+}
+
 .chat {
   display: block;
   margin: auto;
