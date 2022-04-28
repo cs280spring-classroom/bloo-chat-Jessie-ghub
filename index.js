@@ -6,7 +6,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const User = require('./models/User');
 const mongoose = require('mongoose');
-const URI = `mongodb+srv://jessie:Jessie2002@boolchat.jb9fv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const URI = process.env.URI;
 count = 0;
 var alert = require('alert');
 const { hashPassword } = require('./util/hashing');
