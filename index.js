@@ -1,3 +1,4 @@
+require('dotenv').config();
 const debug = require('debug')('bloo-chat');
 const nunjucks = require('nunjucks');
 const express = require('express');
