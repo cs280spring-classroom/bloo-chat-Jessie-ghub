@@ -19,3 +19,4 @@ The user data is stored on Mongodb (models/User.js) and password is hashed and s
 Detailed instructions are at this [url](https://cs280spring.github.io/hw/hw5/index.html).
 
 The application is deployed on [Heroku](https://bloochat-jluo30.herokuapp.com).
+ATTENTION: on the deployed app you need to refresh page after you register or enter wrong username/password, otherwise it gives time-out error. Everything works well locally.
