@@ -70,21 +70,26 @@ app.get('/chatroom', (req, res) => {
 		alert('You must provide both username and password.');
 	} else {
 		// check whether the username and password is in the database
-		User.findOne({ username }).then((user) => {
-			verifyPassword(password, user ? user.password : '')
-				.then((result) => {
-					if (result) {
-						// success, go to chatroom
-						res.render('chatroom.njk', { uname: username });
-						console.log('authorization succeed');
-					} else {
-						alert('authorization failed');
-					}
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		});
+		User.findOne({ username })
+			.then((user) => {
+				verifyPassword(password, user ? user.password : '')
+					.then((result) => {
+						if (result) {
+							// success, go to chatroom
+							res.render('chatroom.njk', { uname: username });
+							console.log('authorization succeed');
+						} else {
+							alert('authorization failed');
+						}
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			})
+			.catch((err) => {
+				console.log(err);
+				alert('user not found');
+			});
 	}
 });
 
