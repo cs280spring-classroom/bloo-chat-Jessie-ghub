@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 	// append the chat text message
 	socket.on('message', (msg) => {
 		const message = document.createElement('li');
-		message.innerHTML = `<strong><u>${msg.user}</u></strong> : ${msg.message}`;
+		message.innerText = `<strong><u>${msg.user}</u></strong> : ${msg.message}`;
 		messages.appendChild(message);
 		messages.scrollTop = messages.scrollHeight;
 	});
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 	// display welcome message
 	function welcome(username) {
 		const message = document.createElement('li');
-		message.innerHTML = `<strong><u>BlooChatApp</u></strong>  Welcome ${username}!`;
+		message.innerText = `<strong><u>BlooChatApp</u></strong>  Welcome ${username}!`;
 		messages.appendChild(message);
 	}
 
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 	socket.on('leave chat', (name) => {
 		if (name) {
 			const message = document.createElement('li');
-			message.innerHTML = `<strong><u>BlooChatApp</u></strong>  ${name} left the chat`;
+			message.innerText = `<strong><u>BlooChatApp</u></strong>  ${name} left the chat`;
 			message.style.backgroundColor = 'red';
 			messages.appendChild(message);
 		}
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 	socket.on('online', (users) => {
 		const message = document.createElement('li');
 		if (users.length === 1) {
-			message.innerHTML = `<strong><u>BlooChatApp</u></strong>  Unfortunately no one is online at the moment`;
+			message.innerText = `<strong><u>BlooChatApp</u></strong>  Unfortunately no one is online at the moment`;
 		} else {
 			pps = '';
 			for (i = 0; i < users.length; i++) {
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 					pps += ' ';
 				}
 			}
-			message.innerHTML = `<strong><u>BlooChatApp</u></strong>  Online users: ${pps}`;
+			message.innerText = `<strong><u>BlooChatApp</u></strong>  Online users: ${pps}`;
 		}
 		messages.appendChild(message);
 	});
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', (_event) => {
 	// display user entrance message
 	socket.on('enter chat', (name) => {
 		const message = document.createElement('li');
-		message.innerHTML = `<strong><u>BlooChatApp</u></strong>  <strong>${name}</strong> entered group chat`;
+		message.innerText = `<strong><u>BlooChatApp</u></strong>  <strong>${name}</strong> entered group chat`;
 		message.style.backgroundColor = 'green';
 		messages.appendChild(message);
 	});
