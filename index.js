@@ -13,6 +13,8 @@ var alert = require('alert');
 const { hashPassword } = require('./util/hashing');
 const { verifyPassword } = require('./util/hashing');
 nunjucks.configure('views', { autoescape: true });
+const port = process.env.PORT || 7000;
+app.use(express.static('assets'));
 
 mongoose
 	.connect(URI)
@@ -23,42 +25,53 @@ mongoose
 		console.log(err);
 	});
 
-const port = process.env.PORT || 7000;
 nunjucks.configure('views', {
 	autoescape: true,
 	express: app
 });
-app.use(express.static('assets'));
 
 // store usernames
 users = [];
 // store socket.id and corresponding usernames
-const map1 = new Map();
+const userMap = new Map();
 
 app.get('/', (req, res) => {
 	console.log(users);
 	res.render('index.njk', null);
 });
 
-app.get('/register', (req, res) => {
+app.get('/register', async (req, res) => {
 	account_name = req.query.newName;
 	account_pwd = req.query.newPass;
 	// check valid account name and password
 	if (account_name != '' && account_pwd != '') {
-		hashPassword(account_pwd)
-			.then((result) => {
-				const account = new User({
-					username: account_name,
-					password: result
-				});
-				// add new account to the db
-				account.save().then(() => {
-					alert('Account created! chat now');
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+		result = await hashPassword(account_pwd);
+		//.then((result) => {
+		const account = new User({
+			username: account_name,
+			password: result
+		});
+		// add new account to the db
+		await account.save();
+		alert('Account created! chat now');
+		//})
+		// .catch((err) => {
+		// 	console.log(err);
+		// });
+		// hashPassword(account_pwd)
+		// 	.then((result) => {
+		// 		const account = new User({
+		// 			username: account_name,
+		// 			password: result
+		// 		});
+		// 		// add new account to the db
+		// 		account.save().then(() => {
+		// 			alert('Account created! chat now');
+		// 		});
+		// 	})
+		// 	.catch((err) => {
+		// 		console.log(err);
+		// 	});
 	} else {
 		alert('invalid input');
 	}
@@ -71,7 +84,7 @@ app.get('/chatroom', (req, res) => {
 		alert('You must provide both username and password.');
 	} else {
 		// check whether the username and password is in the database
-		User.findOne({ username })
+		result = await User.findOne({ username })
 			.then((user) => {
 				verifyPassword(password, user ? user.password : '')
 					.then((result) => {
@@ -98,7 +111,7 @@ io.on('connection', function(socket) {
 	socket.on('log in', (username) => {
 		// update local variables
 		users.push(username);
-		map1.set(socket.id, username);
+		userMap.set(socket.id, username);
 		// for the new user, display online users; for others, notify new user entrance
 		socket.emit('online', users);
 		socket.broadcast.emit('enter chat', username);
@@ -111,7 +124,7 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('disconnect', function() {
-		nameRemove = map1.get(socket.id);
+		nameRemove = userMap.get(socket.id);
 		// notify everyone else who left
 		socket.broadcast.emit('leave chat', nameRemove);
 		// update local variables
@@ -119,7 +132,7 @@ io.on('connection', function(socket) {
 		if (index > -1) {
 			users.splice(index, 1);
 		}
-		map1.delete(socket.id);
+		userMap.delete(socket.id);
 	});
 });
 
